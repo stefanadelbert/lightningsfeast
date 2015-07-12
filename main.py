@@ -1,29 +1,71 @@
-import sys, pygame
+import sys
+import random
+import pygame
+
+# Constants
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+screen_size = screen_width, screen_height = 700, 400
+
+background_fill = WHITE
+
+class Block(pygame.sprite.Sprite):
+    def __init__(self, colour, width, height):
+        super(Block, self).__init__()
+
+        self.image = pygame.Surface((width, height))
+        self.image.fill(colour)
+
+        self.rect = self.image.get_rect()
+
 pygame.init()
+screen = pygame.display.set_mode(screen_size)
 
-size = width, height = 320, 240
-speed = [2, 2]
-black = 0, 0, 0
+block_list = pygame.sprite.Group()
+all_sprites_list = pygame.sprite.Group()
 
-screen = pygame.display.set_mode(size)
+for i in range(50):
+    block = Block(BLACK, 20, 15)
 
-ball_size= 20, 20
-ball = pygame.transform.scale(pygame.image.load('ball.jpg'), ball_size)
-ball_rect = ball.get_rect()
+    block.rect.x = random.randrange(screen_width)
+    block.rect.y = random.randrange(screen_height)
 
-while True:
+    block_list.add(block)
+    all_sprites_list.add(block)
+
+player = Block(RED, 20, 15)
+all_sprites_list.add(player)
+
+done = False
+
+clock = pygame.time.Clock()
+
+score = 0
+
+while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            sys.exit()
+            done = True
 
-    ball_rect = ball_rect.move(speed)
-    if ball_rect.left < 0 or ball_rect.right > width:
-        speed[0] = -speed[0]
-    if ball_rect.top < 0 or ball_rect.bottom > height:
-        speed[1] = -speed[1]
+    screen.fill(background_fill)
 
-    screen.fill(black)
-    screen.blit(ball, ball_rect)
+    pos = pygame.mouse.get_pos()
+
+    player.rect.x = pos[0]
+    player.rect.y = pos[1]
+
+    blocks_hit_list = pygame.sprite.spritecollide(player, block_list, True)
+
+    for block in blocks_hit_list:
+        score += 1
+        print(score)
+
+    all_sprites_list.draw(screen)
+
     pygame.display.flip()
 
-    pygame.time.wait(10)
+    clock.tick(60)
+
+pygame.quit()

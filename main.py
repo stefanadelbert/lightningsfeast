@@ -47,6 +47,10 @@ rocks_list = pygame.sprite.Group()
 trees_list = pygame.sprite.Group()
 all_sprites_list = pygame.sprite.Group()
 
+# Create Lightning and add him to the all sprites list.
+player = Player()
+all_sprites_list.add(player)
+
 # Create burgers for Lightning to eat and add them to the all sprites list and
 # the burgers list.
 while len(hamburger_list) < BURGER_COUNT:
@@ -83,10 +87,6 @@ while len(trees_list) < TREES_COUNT:
 
     trees_list.add(trees)
     all_sprites_list.add(trees)
-
-# Create Lightning and add him to the all sprites list.
-player = Player()
-all_sprites_list.add(player)
 
 # Initialise some main loop variables.
 clock = pygame.time.Clock()

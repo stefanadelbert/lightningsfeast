@@ -8,8 +8,11 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 BURGER_COUNT = 20
-ROCKS_COUNT = 5
+OBSTACLES_COUNT = 5
 TREES_COUNT = 10
+
+obstacle_images = ['resources/rocks1.png']
+trees_images = ['resources/trees1.png', 'resources/trees2.png', 'resources/trees3.png', 'resources/trees4.png']
 
 screen_size = screen_width, screen_height = 700, 400
 
@@ -26,13 +29,15 @@ class Hamburger(Block):
     def __init__(self):
         super(Hamburger, self).__init__('resources/hamburger.png')
 
-class Rocks(Block):
+class Obstacle(Block):
     def __init__(self):
-        super(Rocks, self).__init__('resources/rocks1.png')
+        image = obstacle_images[random.randint(1, len(obstacle_images)) - 1]
+        super(Obstacle, self).__init__(image)
 
 class Trees(Block):
     def __init__(self):
-        super(Trees, self).__init__('resources/trees1.png')
+        image = trees_images[random.randint(1, len(trees_images)) - 1]
+        super(Trees, self).__init__(image)
 
 class Player(Block):
     def __init__(self):
@@ -43,7 +48,7 @@ pygame.display.set_caption('Lighting\'s Feast')
 screen = pygame.display.set_mode(screen_size)
 
 hamburger_list = pygame.sprite.Group()
-rocks_list = pygame.sprite.Group()
+obstacle_list = pygame.sprite.Group()
 trees_list = pygame.sprite.Group()
 all_sprites_list = pygame.sprite.Group()
 
@@ -66,18 +71,18 @@ while len(hamburger_list) < BURGER_COUNT:
     hamburger_list.add(hamburger)
     all_sprites_list.add(hamburger)
 
-while len(rocks_list) < ROCKS_COUNT:
-    rocks = Rocks()
+while len(obstacle_list) < OBSTACLES_COUNT:
+    obstacle = Obstacle()
 
-    rocks.rect.x = random.randrange(screen_width - rocks.rect.width)
-    rocks.rect.y = random.randrange(screen_height - rocks.rect.height)
+    obstacle.rect.x = random.randrange(screen_width - obstacle.rect.width)
+    obstacle.rect.y = random.randrange(screen_height - obstacle.rect.height)
 
-    if len(pygame.sprite.spritecollide(rocks, all_sprites_list, False)):
+    if len(pygame.sprite.spritecollide(obstacle, all_sprites_list, False)):
         # If this sprite collides with another, then throw it away and try again.
         continue
 
-    rocks_list.add(rocks)
-    all_sprites_list.add(rocks)
+    obstacle_list.add(obstacle)
+    all_sprites_list.add(obstacle)
 
 while len(trees_list) < TREES_COUNT:
     trees = Trees()
@@ -94,7 +99,7 @@ done = False
 score = 0
 
 # Render some text
-score_label_font = pygame.font.SysFont('Ubuntu', 20, bold=True)
+score_label_font = pygame.font.SysFont('Ubuntu', 25, bold=True)
 
 # Start the main loop and run it until done is True.
 while not done:
@@ -109,8 +114,9 @@ while not done:
     player.rect.x = pos[0]
     player.rect.y = pos[1]
 
-    rocks_hit_list = pygame.sprite.spritecollide(player, rocks_list, False)
-    if len(rocks_hit_list):
+    obstacle_hit_list = pygame.sprite.spritecollide(
+        player, obstacle_list, False, collided=pygame.sprite.collide_rect_ratio(0.8))
+    if len(obstacle_hit_list):
         done = True
         continue
 
@@ -119,13 +125,13 @@ while not done:
     for block in hamburger_hit_list:
         score += 1
 
-    score_label = score_label_font.render('Score {}'.format(score), True, BLACK)
-    screen.blit(score_label, (1, 10))
-
     if BURGER_COUNT == score:
         done = True
 
     all_sprites_list.draw(screen)
+
+    score_label = score_label_font.render('Score {}'.format(score), True, BLACK)
+    screen.blit(score_label, (screen.get_rect().width - score_label.get_rect().width - 10, 10))
 
     pygame.display.flip()
 

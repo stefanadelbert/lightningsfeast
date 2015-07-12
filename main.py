@@ -12,30 +12,36 @@ screen_size = screen_width, screen_height = 700, 400
 background_fill = WHITE
 
 class Block(pygame.sprite.Sprite):
-    def __init__(self, colour, width, height):
+    def __init__(self, image):
         super(Block, self).__init__()
 
-        self.image = pygame.Surface((width, height))
-        self.image.fill(colour)
-
+        self.image = pygame.image.load(image).convert()
         self.rect = self.image.get_rect()
+
+class Hamburger(Block):
+    def __init__(self):
+        super(Hamburger, self).__init__('resources/hamburger.png')
+
+class Player(Block):
+    def __init__(self):
+        super(Player, self).__init__('resources/lightning.png')
 
 pygame.init()
 screen = pygame.display.set_mode(screen_size)
 
-block_list = pygame.sprite.Group()
+hamburger_list = pygame.sprite.Group()
 all_sprites_list = pygame.sprite.Group()
 
 for i in range(50):
-    block = Block(BLACK, 20, 15)
+    hamburger = Hamburger()
 
-    block.rect.x = random.randrange(screen_width)
-    block.rect.y = random.randrange(screen_height)
+    hamburger.rect.x = random.randrange(screen_width)
+    hamburger.rect.y = random.randrange(screen_height)
 
-    block_list.add(block)
-    all_sprites_list.add(block)
+    hamburger_list.add(hamburger)
+    all_sprites_list.add(hamburger)
 
-player = Block(RED, 20, 15)
+player = Player()
 all_sprites_list.add(player)
 
 done = False
@@ -56,9 +62,9 @@ while not done:
     player.rect.x = pos[0]
     player.rect.y = pos[1]
 
-    blocks_hit_list = pygame.sprite.spritecollide(player, block_list, True)
+    hamburger_hit_list = pygame.sprite.spritecollide(player, hamburger_list, True)
 
-    for block in blocks_hit_list:
+    for block in hamburger_hit_list:
         score += 1
         print(score)
 

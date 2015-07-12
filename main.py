@@ -8,6 +8,8 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 BURGER_COUNT = 20
+ROCKS_COUNT = 5
+TREES_COUNT = 10
 
 screen_size = screen_width, screen_height = 700, 400
 
@@ -26,7 +28,11 @@ class Hamburger(Block):
 
 class Rocks(Block):
     def __init__(self):
-        super(Hamburger, self).__init__('resources/rocks1.png')
+        super(Rocks, self).__init__('resources/rocks1.png')
+
+class Trees(Block):
+    def __init__(self):
+        super(Trees, self).__init__('resources/trees1.png')
 
 class Player(Block):
     def __init__(self):
@@ -37,23 +43,46 @@ pygame.display.set_caption('Lighting\'s Feast')
 screen = pygame.display.set_mode(screen_size)
 
 hamburger_list = pygame.sprite.Group()
+rocks_list = pygame.sprite.Group()
+trees_list = pygame.sprite.Group()
 all_sprites_list = pygame.sprite.Group()
 
 # Create burgers for Lightning to eat and add them to the all sprites list and
 # the burgers list.
-for i in range(BURGER_COUNT):
+while len(hamburger_list) < BURGER_COUNT:
     hamburger = Hamburger()
 
-    hamburger.rect.x = random.randrange(screen_width)
-    hamburger.rect.y = random.randrange(screen_height)
+    hamburger.rect.x = random.randrange(screen_width - hamburger.rect.width)
+    hamburger.rect.y = random.randrange(screen_height - hamburger.rect.height)
 
-    # Check that the hamburger is within the 
-    while not screen.get_rect().contains(hamburger.rect):
-        hamburger.rect.x = random.randrange(screen_width)
-        hamburger.rect.y = random.randrange(screen_height)
+    if len(pygame.sprite.spritecollide(hamburger, all_sprites_list, False)):
+        # If this sprite collides with another, then throw it away and try again.
+        continue
 
     hamburger_list.add(hamburger)
     all_sprites_list.add(hamburger)
+
+while len(rocks_list) < ROCKS_COUNT:
+    rocks = Rocks()
+
+    rocks.rect.x = random.randrange(screen_width - rocks.rect.width)
+    rocks.rect.y = random.randrange(screen_height - rocks.rect.height)
+
+    if len(pygame.sprite.spritecollide(rocks, all_sprites_list, False)):
+        # If this sprite collides with another, then throw it away and try again.
+        continue
+
+    rocks_list.add(rocks)
+    all_sprites_list.add(rocks)
+
+while len(trees_list) < TREES_COUNT:
+    trees = Trees()
+
+    trees.rect.x = random.randrange(screen_width - trees.rect.width)
+    trees.rect.y = random.randrange(screen_height - trees.rect.height)
+
+    trees_list.add(trees)
+    all_sprites_list.add(trees)
 
 # Create Lightning and add him to the all sprites list.
 player = Player()
@@ -79,6 +108,11 @@ while not done:
 
     player.rect.x = pos[0]
     player.rect.y = pos[1]
+
+    rocks_hit_list = pygame.sprite.spritecollide(player, rocks_list, False)
+    if len(rocks_hit_list):
+        done = True
+        continue
 
     hamburger_hit_list = pygame.sprite.spritecollide(player, hamburger_list, True)
 

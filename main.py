@@ -17,12 +17,16 @@ class Block(pygame.sprite.Sprite):
     def __init__(self, image):
         super(Block, self).__init__()
 
-        self.image = pygame.image.load(image).convert()
+        self.image = pygame.image.load(image).convert_alpha()
         self.rect = self.image.get_rect()
 
 class Hamburger(Block):
     def __init__(self):
         super(Hamburger, self).__init__('resources/hamburger.png')
+
+class Rocks(Block):
+    def __init__(self):
+        super(Hamburger, self).__init__('resources/rocks1.png')
 
 class Player(Block):
     def __init__(self):
@@ -62,7 +66,6 @@ score = 0
 
 # Render some text
 score_label_font = pygame.font.SysFont('Ubuntu', 20, bold=True)
-game_message_font = pygame.font.SysFont('Ubuntu', 30, bold=True)
 
 # Start the main loop and run it until done is True.
 while not done:
@@ -71,8 +74,6 @@ while not done:
             done = True
 
     screen.fill(background_fill)
-    score_label = score_label_font.render('Score {}'.format(score), True, BLACK)
-    screen.blit(score_label, (1, 10))
 
     pos = pygame.mouse.get_pos()
 
@@ -83,7 +84,9 @@ while not done:
 
     for block in hamburger_hit_list:
         score += 1
-        print(score)
+
+    score_label = score_label_font.render('Score {}'.format(score), True, BLACK)
+    screen.blit(score_label, (1, 10))
 
     if BURGER_COUNT == score:
         done = True
@@ -94,10 +97,13 @@ while not done:
 
     clock.tick(60)
 
+# End of game sequence.
+game_message_font = pygame.font.SysFont('Ubuntu', 30, bold=True)
 if BURGER_COUNT == score:
     end_message = game_message_font.render('Victory', True, BLACK)
 else:
     end_message = game_message_font.render('Game Over', True, BLACK)
+
 text_rect = end_message.get_rect()
 text_rect.centerx = screen.get_rect().centerx
 text_rect.centery = screen.get_rect().centery
